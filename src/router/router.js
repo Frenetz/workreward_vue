@@ -16,10 +16,15 @@ import MyRewards from '@/components/MyRewards.vue';
 import ReportsList from '@/components/ReportsList.vue';
 import CreateReport from '@/components/CreateReport.vue';
 import CreateReward from '@/components/CreateReward.vue';
+import NotFound from '@/components/NotFound.vue';
 
 function isAuthenticated() {
   const token = localStorage.getItem('access_token');
   return !!token;
+}
+
+function isManager() {
+  return localStorage.getItem('is_manager') === 'true';  
 }
 
 const routes = [
@@ -32,7 +37,7 @@ const routes = [
   { 
     path: '/register', component: RegisterForm, beforeEnter: (to, from, next) => {
     if (isAuthenticated()) {
-      next('/index');
+      next('/');
     } else {
       next();
     }
@@ -40,7 +45,7 @@ const routes = [
   { 
     path: '/auth', component: AuthForm, props: route => ({ registrationSuccess: route.query.success || false }), name: 'auth' , beforeEnter: (to, from, next) => {
     if (isAuthenticated()) {
-      next('/index');
+      next('/');
     } else {
       next();
     }
@@ -48,13 +53,13 @@ const routes = [
   { 
     path: '/reset-password', component: PasswordReset, beforeEnter: (to, from, next) => {
     if (isAuthenticated()) {
-      next('/auth');
+      next('/');
     } else {
       next();
     }
   }},
   {
-    path: '/api/v1/users/password-reset-confirm/:uidb64/:token',
+    path: '/password-reset-confirm/:uidb64/:token',
     component: PasswordResetConfirm,
     props: true,
   },
@@ -119,7 +124,12 @@ const routes = [
   {
     path: '/my-tasks', component: MyTasks, name: 'my-tasks', beforeEnter: (to, from, next) => {
       if (isAuthenticated()) {
-        next();
+        if (!isManager()) {
+          next();
+        }
+        else {
+          next('/');
+        }
       }
       else {
         next('/auth');
@@ -129,7 +139,12 @@ const routes = [
   {
     path: '/create-task', component: CreateTask, name: 'create-task', beforeEnter: (to, from, next) => {
       if (isAuthenticated()) {
-        next();
+        if (isManager()) {
+          next();
+        }
+        else {
+          next('/');
+        }
       }
       else {
         next('/auth');
@@ -139,7 +154,12 @@ const routes = [
   {
     path: '/assign-task/:id', component: AssignTask, name: 'assign-task', beforeEnter: (to, from, next) => {
       if (isAuthenticated()) {
-        next();
+        if (isManager()) {
+          next();
+        }
+        else {
+          next('/');
+        }
       }
       else {
         next('/auth');
@@ -149,7 +169,12 @@ const routes = [
   {
     path: '/my-rewards', component: MyRewards, name: 'my-rewards', beforeEnter: (to, from, next) => {
       if (isAuthenticated()) {
-        next();
+        if (!isManager()) {
+          next();
+        }
+        else {
+          next('/');
+        }
       }
       else {
         next('/auth');
@@ -169,7 +194,12 @@ const routes = [
   {
     path: '/create-report/:id', component: CreateReport, name: 'create-report', beforeEnter: (to, from, next) => {
       if (isAuthenticated()) {
-        next();
+        if (!isManager()) {
+          next();
+        }
+        else {
+          next('/');
+        }
       }
       else {
         next('/auth');
@@ -179,13 +209,21 @@ const routes = [
   {
     path: '/create-reward/:id', component: CreateReward, name: 'create-reward', beforeEnter: (to, from, next) => {
       if (isAuthenticated()) {
-        next();
+        if (isManager()) {
+          next();
+        }
+        else {
+          next('/');
+        }
       }
       else {
         next('/auth');
       }
     }
-  },    
+  },
+  {
+    path: '/:pathMatch(.*)*', component: NotFound, name: 'not-found'
+  },
 ];
 
 const router = createRouter({

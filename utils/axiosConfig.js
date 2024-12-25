@@ -5,7 +5,7 @@ const getRefreshToken = () => localStorage.getItem('refresh_token');
 
 const refreshToken = async () => {
   try {
-    const response = await axios.post('http://localhost:8002/api/v1/users/login/refresh/', {
+    const response = await axios.post(`${process.env.VUE_APP_API_URL}/users/login/refresh/`, {
       refresh: getRefreshToken(),
     });
     const { access } = response.data.user;
