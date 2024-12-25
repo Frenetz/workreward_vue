@@ -12,7 +12,7 @@
 				<p class="card-text"><strong>Текст отчета:</strong> {{ report.text }}</p>
 				<p class="card-text"><strong>Коэффициент эффективности:</strong> {{ report.efficiency_score }}</p>
 				<div class="mt-3">
-					<router-link v-if="isManager && report.is_awarded == False" :to="{ name: 'create-reward', params: { id: report.id } }" class="btn btn-primary ml-3">
+					<router-link v-if="isManager && report.is_awarded == false" :to="{ name: 'create-reward', params: { id: report.id } }" class="btn btn-primary ml-3">
 						Назначить премию
 					</router-link>
 					<button v-if="isManager" @click="downloadReport(report.id)" class="btn btn-primary mt-3">
@@ -75,7 +75,7 @@ export default {
 				const response = await axios.get(url, {
 					headers: headers,
 				});
-
+				console.log(response);
 				this.reportsData = response.data.task_report;
 
 			} catch (error) {
